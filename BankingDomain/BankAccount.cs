@@ -6,16 +6,13 @@ namespace BankingDomain
     {
         private decimal _currentBalance = 5000;
 
-        public BankAccount()
-        {
-        }
-
         public decimal GetBalance()
         {
             return _currentBalance;
         }
 
-        public void Deposit(decimal amountToDeposit)
+        // Overridable
+        public virtual void Deposit(decimal amountToDeposit)
         {
             this._currentBalance += amountToDeposit;
         }
