@@ -1,4 +1,5 @@
 ﻿using BankingDomain;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,31 +9,35 @@ namespace BankingTests
 {
     public class BankAccountWithdrawTests
     {
+        private BankAccount _account;
+        private decimal _openingBalance;
+
+        public BankAccountWithdrawTests()
+        {
+            _account = new BankAccount(new DummyBonusCalculator(), new Mock<INarcOnAccounts>().Object);
+            _openingBalance = _account.GetBalance();
+        }
+
         [Fact] 
         public void WithdrawMoneyFromBankAccount()
         {
             // Given
-            var account = new BankAccount();
-            var openingBalance = account.GetBalance();
             var amountToWithdraw = 1M;
 
             // When
-            account.Withdraw(amountToWithdraw);
+            _account.Withdraw(amountToWithdraw);
 
             // Then
-            var expectedBalance = openingBalance - amountToWithdraw;
-            Assert.Equal(expectedBalance, account.GetBalance());
+            var expectedBalance = _openingBalance - amountToWithdraw;
+            Assert.Equal(expectedBalance, _account.GetBalance());
         }
 
         [Fact]
         public void YouCanTakeAllYourMoney()
         {
-            var account = new BankAccount();
-            var openingBalance = account.GetBalance();
+            _account.Withdraw(_openingBalance);
 
-            account.Withdraw(openingBalance);
-
-            Assert.Equal(0, account.GetBalance());
+            Assert.Equal(0, _account.GetBalance());
         }
 
         //[Fact]

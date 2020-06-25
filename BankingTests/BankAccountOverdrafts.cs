@@ -1,4 +1,5 @@
 ﻿using BankingDomain;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,15 +9,22 @@ namespace BankingTests
 {
     public class BankAccountOverdrafts
     {
+        private decimal _openingBalance;
+        private BankAccount _account;
+
+        public BankAccountOverdrafts()
+        {
+            _account = new BankAccount(new Mock<ICalculateBonuses>().Object, new Mock<INarcOnAccounts>().Object);
+            _openingBalance = _account.GetBalance();
+        }
+
         [Fact]
         public void OverdraftDoesNotDecreaseBalance()
         {
-            var account = new BankAccount();
-            var openingBalance = account.GetBalance();
 
             try
             {
-                account.Withdraw(openingBalance + 1);
+                _account.Withdraw(_openingBalance + 1);
             }
             catch (OverdraftException)
             {
@@ -24,16 +32,14 @@ namespace BankingTests
                 // (I expected this, keep going).
             }
 
-            Assert.Equal(openingBalance, account.GetBalance());
+            Assert.Equal(_openingBalance, _account.GetBalance());
         }
 
         [Fact]
         public void OverdraftThrowsAnException()
         {
-            var account = new BankAccount();
-            var openingBalance = account.GetBalance();
 
-            Assert.Throws<OverdraftException>(() => account.Withdraw(openingBalance + 1));
+            Assert.Throws<OverdraftException>(() => _account.Withdraw(_openingBalance + 1));
         }
     }
 }

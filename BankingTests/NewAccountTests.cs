@@ -1,4 +1,5 @@
 ﻿using BankingDomain;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -13,7 +14,7 @@ namespace BankingTests
         {
             // "WTCYWYH" "Write the code you wish you had"
             // Given I have a brand new bank account
-            var account = new BankAccount();
+            var account = new BankAccount(new DummyBonusCalculator(), new Mock<INarcOnAccounts>().Object);
 
             // When I retrieve the balance
 
