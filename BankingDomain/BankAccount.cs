@@ -23,21 +23,34 @@ namespace BankingDomain
         {
             // the amount to deposit, the current balance
             // WTCYWYH
+            GuardAmount(amountToDeposit);
             decimal amountOfBonus = _bonusCalculator.GetDepositBonusFor(amountToDeposit, _currentBalance);
             this._currentBalance += amountToDeposit + amountOfBonus;
         }
 
         public void Withdraw(decimal amountToWithdraw)
         {
-            if(amountToWithdraw <= _currentBalance)
+            GuardAmount(amountToWithdraw);
+            GuardOverdraft(amountToWithdraw);
+            _feds.NotifyOfWithdrawal(this, amountToWithdraw);
+            _currentBalance -= amountToWithdraw;
+
+        }
+
+        private void GuardAmount(decimal amount)
+        {
+            if (amount <= 0)
             {
-                _feds.NotifyOfWithdrawal(this, amountToWithdraw);
-                _currentBalance -= amountToWithdraw;
-            } else
+                throw new BadAmountException();
+            }
+        }
+        
+        private void GuardOverdraft(decimal amountToWithdraw)
+        {
+            if (amountToWithdraw > _currentBalance)
             {
                 throw new OverdraftException();
             }
-            
         }
     }
 }
